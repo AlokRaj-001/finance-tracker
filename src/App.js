@@ -112,11 +112,21 @@ const getSlicePath = (x, y, innerRadius, outerRadius, startAngle, endAngle) => {
 // Global total for Pie calculation
 let totalValueForPie = 0;
 
+// --- GLOBAL VARIABLES (SECURELY LOADED FROM .env.local) ---
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID
+};
 
-// --- GLOBAL VARIABLES (Provided by Canvas Environment) ---
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+// ADD THIS DEBUGGING LINE
+console.log("My Firebase Config:", firebaseConfig);
+
+const appId = firebaseConfig.appId;
+const initialAuthToken = null;
 
 // Currency definitions
 // USD is the base currency for storage.
