@@ -23,17 +23,17 @@ const Recharts = {
             const percent = (value / totalValueForPie) * 100;
             const angle = (value / totalValueForPie) * 360;
             const endAngle = startAngle + angle;
-            
+
             const path = getSlicePath(cx, cy, innerRadius, outerRadius, startAngle, endAngle);
-            
+
             startAngle = endAngle;
 
             return (
-                <path 
-                    key={`slice-${index}`} 
-                    d={path} 
-                    fill={sliceFill || fill} 
-                    stroke="#fff" 
+                <path
+                    key={`slice-${index}`}
+                    d={path}
+                    fill={sliceFill || fill}
+                    stroke="#fff"
                     strokeWidth="1"
                 />
             );
@@ -63,7 +63,7 @@ const TrendUpIcon = () => (
 
 const TrendDownIcon = () => (
     <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor">
-         <path strokeLinecap="round" strokeLinejoin="round" d="m 4.5 4.5 5.25 5.25 3 -3 5.25 5.25 3.75 -3.75 V 17.25 H 15" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="m 4.5 4.5 5.25 5.25 3 -3 5.25 5.25 3.75 -3.75 V 17.25 H 15" />
     </svg>
 );
 
@@ -82,7 +82,7 @@ const getSlicePath = (x, y, innerRadius, outerRadius, startAngle, endAngle) => {
     if (isNaN(startAngle) || isNaN(endAngle)) {
         return '';
     }
-    
+
     // Handle full circle
     if (endAngle - startAngle >= 360) {
         endAngle = startAngle + 359.99;
@@ -114,12 +114,12 @@ let totalValueForPie = 0;
 
 // --- GLOBAL VARIABLES (SECURELY LOADED FROM .env.local) ---
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID
+    apiKey: process.env.REACT_APP_API_KEY,
+    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+    projectId: process.env.REACT_APP_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+    appId: process.env.REACT_APP_APP_ID
 };
 
 // ADD THIS DEBUGGING LINE
@@ -153,12 +153,12 @@ const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088FE', '#00C49F'
 const formatCurrency = (baseAmount, displayCode, rates) => {
     const rate = rates[displayCode] || 1;
     const convertedAmount = baseAmount * rate;
-    
-    const absAmount = Math.abs(convertedAmount); 
-    return new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: displayCode, 
-        minimumFractionDigits: 2 
+
+    const absAmount = Math.abs(convertedAmount);
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: displayCode,
+        minimumFractionDigits: 2
     }).format(absAmount);
 };
 
@@ -190,7 +190,7 @@ const getModalDefaultDate = (filterMonth, filterYear) => {
     const currentYear = now.getFullYear().toString();
 
     let defaultDate;
-    
+
     // Check if filter is set to the current month and year (or no filter)
     if (
         (filterMonth === currentMonth && filterYear === currentYear) ||
@@ -272,9 +272,9 @@ const NavigationView = ({ theme, textHeading, handleNavAction, setView }) => (
 );
 
 // 2. Category View
-const CategoryView = ({ 
-    theme, textHeading, cardBg, border, inputBg, itemBg, subText, 
-    db, userId, appId, categories, 
+const CategoryView = ({
+    theme, textHeading, cardBg, border, inputBg, itemBg, subText,
+    db, userId, appId, categories,
 }) => {
     const [newCategoryType, setNewCategoryType] = useState('Expense');
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -285,24 +285,24 @@ const CategoryView = ({
 
         const categoryName = newCategoryName.trim();
         const categoryDocRef = doc(db, `/artifacts/${appId}/users/${userId}/settings/categories`);
-        
+
         try {
             await runTransaction(db, async (transaction) => {
                 const categorySnap = await transaction.get(categoryDocRef);
                 const currentData = categorySnap.data() || { Income: DEFAULT_INCOME_CATEGORIES, Expense: DEFAULT_EXPENSE_CATEGORIES };
-                
+
                 const currentList = currentData[newCategoryType] || (newCategoryType === 'Income' ? DEFAULT_INCOME_CATEGORIES : DEFAULT_EXPENSE_CATEGORIES);
 
                 if (currentList.includes(categoryName)) {
                     console.error("Category already exists.");
                     return; // Abort transaction
                 }
-                
+
                 const updatedCategories = {
                     ...currentData,
                     [newCategoryType]: [...currentList, categoryName].sort(),
                 };
-                
+
                 transaction.set(categoryDocRef, updatedCategories, { merge: true });
             });
             setNewCategoryName('');
@@ -326,7 +326,7 @@ const CategoryView = ({
                     ...currentData,
                     [type]: (currentData[type] || []).filter(cat => cat !== name),
                 };
-                
+
                 transaction.set(categoryDocRef, updatedCategories, { merge: true });
             });
         } catch (error) {
@@ -337,9 +337,9 @@ const CategoryView = ({
     return (
         <>
             <h4 className={`text-xl font-semibold ${textHeading} mb-4`}>Manage Custom Categories</h4>
-            
+
             <form onSubmit={handleAddCategory} className={`flex flex-col sm:flex-row gap-2 mb-6 p-4 border rounded-lg ${cardBg} ${border}`}>
-                <select 
+                <select
                     value={newCategoryType} onChange={(e) => setNewCategoryType(e.target.value)}
                     className={`p-2 border rounded-lg sm:w-28 ${inputBg}`}
                 >
@@ -362,7 +362,7 @@ const CategoryView = ({
                             {categories[type].map(cat => (
                                 <li key={cat} className="flex justify-between items-center py-1.5">
                                     <span className={subText}>{cat}</span>
-                                    <button 
+                                    <button
                                         onClick={() => handleDeleteCategory(type, cat)}
                                         className="text-red-500 hover:text-red-700 p-1"
                                         title="Delete Category"
@@ -390,12 +390,12 @@ const RecurringView = ({
     const [recType, setRecType] = useState('Expense');
     const [recCategory, setRecCategory] = useState(categories.Expense[0] || '');
     const [recDescription, setRecDescription] = useState('');
-    
+
     const currentRecCategories = categories[recType] || [];
     const currentSymbol = CURRENCIES[displayCurrencyCode]?.symbol || '$';
-    
+
     useEffect(() => {
-         setRecCategory(currentRecCategories[0] || '');
+        setRecCategory(currentRecCategories[0] || '');
     }, [recType, currentRecCategories]);
 
     const handleAddRecurring = async (e) => {
@@ -417,7 +417,7 @@ const RecurringView = ({
         try {
             const recurringColRef = collection(db, `/artifacts/${appId}/users/${userId}/recurring`);
             await addDoc(recurringColRef, newTemplate);
-            
+
             setRecAmount('');
             setRecDescription('');
         } catch (error) {
@@ -441,7 +441,7 @@ const RecurringView = ({
 
             <form onSubmit={handleAddRecurring} className={`p-4 border rounded-lg ${cardBg} ${border} mb-6 grid grid-cols-2 gap-3`}>
                 <h5 className={`col-span-2 font-bold mb-2 ${textHeading}`}>New Monthly Recurring Template</h5>
-                
+
                 {/* Amount input is now in display currency */}
                 <div>
                     <label className={`block text-xs font-medium ${subText} mb-1`}>Amount (in {displayCurrencyCode})</label>
@@ -459,7 +459,7 @@ const RecurringView = ({
                 </div>
 
                 <div className="md:col-span-2">
-                     <label className={`block text-xs font-medium ${subText} mb-1`}>Category</label>
+                    <label className={`block text-xs font-medium ${subText} mb-1`}>Category</label>
                     <select required value={recCategory} onChange={(e) => setRecCategory(e.target.value)} className={`p-2 border rounded-lg w-full ${inputBg}`}>
                         {currentRecCategories.length === 0 && <option disabled>Please add a category first</option>}
                         {currentRecCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -497,7 +497,7 @@ const RecurringView = ({
                                     <span className="mr-1.5">{template.type === 'Income' ? <TrendUpIcon /> : <TrendDownIcon />}</span>
                                     {formatCurrency(template.amount, displayCurrencyCode, exchangeRates)}
                                 </span>
-                                <button 
+                                <button
                                     onClick={() => handleDeleteRecurring(template.id)}
                                     className="text-red-400 hover:text-red-600 ml-3"
                                     title="Delete Template"
@@ -567,13 +567,14 @@ const App = () => {
     const [db, setDb] = useState(null);
     const [auth, setAuth] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [isAnonymous, setIsAnonymous] = useState(true); // NEW: Track if user is a guest
 
     // Data and UI State
     const [transactions, setTransactions] = useState([]);
     const [monthlyGoalUSD, setMonthlyGoalUSD] = useState(null); // Goal is stored in USD
-    const [userCategories, setUserCategories] = useState({ 
-        Income: DEFAULT_INCOME_CATEGORIES, 
-        Expense: DEFAULT_EXPENSE_CATEGORIES 
+    const [userCategories, setUserCategories] = useState({
+        Income: DEFAULT_INCOME_CATEGORIES,
+        Expense: DEFAULT_EXPENSE_CATEGORIES
     });
     const [recurringTemplates, setRecurringTemplates] = useState([]);
 
@@ -583,7 +584,7 @@ const App = () => {
     const [showConfigModal, setShowConfigModal] = useState(false);
     const [showConfirmResetModal, setShowConfirmResetModal] = useState(false);
     const [currentView, setCurrentView] = useState('Dashboard'); // 'Dashboard' or 'Report'
-    
+
     // Theme State
     const [theme, setTheme] = useState(() => {
         const savedTheme = localStorage.getItem('finance-tracker-theme');
@@ -599,7 +600,7 @@ const App = () => {
         }, {})
     );
     const [ratesLoading, setRatesLoading] = useState(true);
-    
+
     const currentYear = new Date().getFullYear();
     const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString());
     const [filterYear, setFilterYear] = useState(currentYear.toString());
@@ -631,9 +632,9 @@ const App = () => {
                 // Using a free, no-key API. In a real app, use a reliable, keyed API.
                 const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${BASE_CURRENCY}`);
                 if (!response.ok) throw new Error('Failed to fetch rates');
-                
+
                 const data = await response.json();
-                
+
                 // Update our rates state
                 const newRates = {};
                 Object.keys(CURRENCIES).forEach(code => {
@@ -645,7 +646,7 @@ const App = () => {
                 });
                 newRates[BASE_CURRENCY] = 1; // Ensure base is always 1
                 setExchangeRates(newRates);
-                
+
             } catch (error) {
                 console.error("Error fetching exchange rates:", error);
                 // In case of error, we'll just use the placeholder rates
@@ -653,7 +654,7 @@ const App = () => {
                 setRatesLoading(false);
             }
         };
-        
+
         fetchRates();
         // Fetch rates once on load.
     }, []);
@@ -670,31 +671,32 @@ const App = () => {
             const app = initializeApp(firebaseConfig);
             const firestoreDb = getFirestore(app);
             const firebaseAuth = getAuth(app);
-            
+
             setDb(firestoreDb);
             setAuth(firebaseAuth);
 
             const unsubscribeAuth = onAuthStateChanged(firebaseAuth, async (user) => {
-                let currentUid;
                 if (user) {
-                    currentUid = user.uid;
+                    // A user is logged in. Check if they are a guest or real.
+                    setUserId(user.uid);
+                    setIsAnonymous(user.isAnonymous); // NEW: Update our state
                 } else {
+                    // No user is logged in, sign them in as a guest
+                    setUserId(null);
+                    setIsAnonymous(true); // NEW: They are a guest
                     try {
                         if (initialAuthToken) {
+                            // This line isn't needed for local development, but is safe
                             await signInWithCustomToken(firebaseAuth, initialAuthToken);
                         } else {
                             await signInAnonymously(firebaseAuth);
                         }
-                        currentUid = firebaseAuth.currentUser.uid;
+                        // onAuthStateChanged will run AGAIN after this,
+                        // which will set the new anonymous user
                     } catch (authError) {
                         console.error("Authentication Error:", authError);
-                        if (!firebaseAuth.currentUser) {
-                             await signInAnonymously(firebaseAuth);
-                             currentUid = firebaseAuth.currentUser.uid;
-                        }
                     }
                 }
-                setUserId(currentUid);
                 // We set loading false only when both auth is ready AND rates are ready
                 // The rates fetch will set loading false if it finishes *after* auth.
             });
@@ -738,9 +740,9 @@ const App = () => {
                     Expense: data.Expense && data.Expense.length > 0 ? data.Expense : DEFAULT_EXPENSE_CATEGORIES,
                 });
             } else {
-                 setDoc(categoryDocRef, { 
-                    Income: DEFAULT_INCOME_CATEGORIES, 
-                    Expense: DEFAULT_EXPENSE_CATEGORIES 
+                setDoc(categoryDocRef, {
+                    Income: DEFAULT_INCOME_CATEGORIES,
+                    Expense: DEFAULT_EXPENSE_CATEGORIES
                 }, { merge: true }).catch(err => console.error("Error setting default categories:", err));
             }
         }, (error) => console.error("Error listening to categories:", error));
@@ -793,14 +795,14 @@ const App = () => {
         const currentMonth = today.getMonth();
         const currentYear = today.getFullYear();
         const nowTimestamp = Date.now();
-        
+
         let operationsCount = 0;
 
         for (const template of recurringTemplates) {
             const lastRunDate = template.lastRun ? new Date(template.lastRun) : new Date(0);
-            
+
             if (lastRunDate.getMonth() !== currentMonth || lastRunDate.getFullYear() !== currentYear) {
-                
+
                 const newTransaction = {
                     amount: template.amount, // Amount is already in USD
                     type: template.type,
@@ -844,7 +846,7 @@ const App = () => {
         let totalExpense = 0;
         const expensesByCategory = {};
 
-        const filtered = data.filter(t => 
+        const filtered = data.filter(t =>
             isTransactionInPeriod(t.timestamp, month, year)
         );
 
@@ -867,17 +869,17 @@ const App = () => {
             fill: COLORS[index % COLORS.length]
         }));
 
-        return { 
-            summary: { balance: currentBalance, income: totalIncome, expense: totalExpense }, 
-            filteredTransactions: filtered, 
-            expenseCategoryData: expenseData 
+        return {
+            summary: { balance: currentBalance, income: totalIncome, expense: totalExpense },
+            filteredTransactions: filtered,
+            expenseCategoryData: expenseData
         };
     }, []);
 
     // Memoized Summary for Dashboard
-    const dashboardData = useMemo(() => 
+    const dashboardData = useMemo(() =>
         calculateSummary(transactions, filterMonth, filterYear)
-    , [transactions, filterMonth, filterYear, calculateSummary]);
+        , [transactions, filterMonth, filterYear, calculateSummary]);
 
 
     // --- 7. BUDGET GOAL MANAGEMENT ---
@@ -890,7 +892,7 @@ const App = () => {
             console.error("Invalid goal amount");
             return;
         }
-        
+
         // Convert displayed currency amount back to USD for storage
         const newGoalUSD = convertToGlobalBase(newGoal, displayCurrencyCode, exchangeRates);
 
@@ -943,16 +945,16 @@ const App = () => {
 
             // 3. Reset settings
             const categoryDocRef = doc(db, `/artifacts/${appId}/users/${userId}/settings/categories`);
-            await setDoc(categoryDocRef, { 
-                Income: DEFAULT_INCOME_CATEGORIES, 
-                Expense: DEFAULT_EXPENSE_CATEGORIES 
+            await setDoc(categoryDocRef, {
+                Income: DEFAULT_INCOME_CATEGORIES,
+                Expense: DEFAULT_EXPENSE_CATEGORIES
             });
-            
+
             const goalDocRef = doc(db, `/artifacts/${appId}/users/${userId}/settings/budget`);
             await setDoc(goalDocRef, { monthlyGoalUSD: null }); // Reset goal to null
-            
+
             console.log("Reset settings.");
-            
+
         } catch (error) {
             console.error("Error resetting data:", error);
         } finally {
@@ -984,7 +986,7 @@ const App = () => {
             </p>
         </div>
     );
-    
+
     // Displays CONVERTED currency
     const GoalCard = ({ summary }) => {
         const bgColor = theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
@@ -992,7 +994,7 @@ const App = () => {
         const headingColor = theme === 'dark' ? 'text-white' : 'text-gray-800';
         const valueColor = theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600';
         const subTextColor = theme === 'dark' ? 'text-gray-400' : 'text-gray-500';
-        
+
         // No goal set state
         if (monthlyGoalUSD === null) {
             return (
@@ -1010,7 +1012,7 @@ const App = () => {
                 </div>
             );
         }
-        
+
         // All calculations in USD
         const percentage = monthlyGoalUSD > 0 ? Math.min(100, (summary.expense / monthlyGoalUSD) * 100) : (summary.expense > 0 ? 100 : 0);
         const remainingUSD = monthlyGoalUSD - summary.expense;
@@ -1026,13 +1028,13 @@ const App = () => {
                         </p>
                         {/* Display is CONVERTED */}
                         <p className={`text-2xl font-bold ${valueColor}`}>
-                            {formatCurrency(summary.expense, displayCurrencyCode, exchangeRates)} 
+                            {formatCurrency(summary.expense, displayCurrencyCode, exchangeRates)}
                             <span className={`${subTextColor} text-sm`}> / {formatCurrency(monthlyGoalUSD, displayCurrencyCode, exchangeRates)}</span>
                         </p>
                         <p className={`text-sm ${isOverBudget ? 'text-red-500' : 'text-green-600'} font-medium mt-1`}>
                             {/* Display remaining CONVERTED */}
-                            {isOverBudget 
-                                ? `${formatCurrency(Math.abs(remainingUSD), displayCurrencyCode, exchangeRates)} Over Budget` 
+                            {isOverBudget
+                                ? `${formatCurrency(Math.abs(remainingUSD), displayCurrencyCode, exchangeRates)} Over Budget`
                                 : `${formatCurrency(remainingUSD, displayCurrencyCode, exchangeRates)} Remaining`}
                         </p>
                     </div>
@@ -1062,7 +1064,7 @@ const App = () => {
                 onSave(newGoal); // onSave now expects the *displayed* currency value
             }
         };
-        
+
         const currentSymbol = CURRENCIES[displayCurrencyCode]?.symbol || '$';
         const modalBg = theme === 'dark' ? 'bg-gray-800' : 'bg-white';
         const textLabel = theme === 'dark' ? 'text-gray-300' : 'text-gray-700';
@@ -1115,7 +1117,7 @@ const App = () => {
         const cardBg = theme === 'dark' ? 'bg-gray-800' : 'bg-white';
         const headingColor = theme === 'dark' ? 'text-white' : 'text-gray-700';
         const textColor = theme === 'dark' ? 'text-gray-400' : 'text-gray-500';
-        
+
         if (expenseCategoryData.length === 0) {
             return (
                 <div className={`text-center p-8 ${textColor} ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg mt-8`}>
@@ -1123,7 +1125,7 @@ const App = () => {
                 </div>
             );
         }
-        
+
         // Sum of USD values
         totalValueForPie = expenseCategoryData.reduce((sum, item) => sum + item.value, 0);
 
@@ -1141,7 +1143,7 @@ const App = () => {
             value: `${item.name} (${item.percent}%)`,
             type: 'circle',
             color: item.fill,
-            payload: { value: formatCurrency(item.value, displayCurrencyCode, exchangeRates) } 
+            payload: { value: formatCurrency(item.value, displayCurrencyCode, exchangeRates) }
         }));
 
         return (
@@ -1171,9 +1173,9 @@ const App = () => {
     const FilterAndCurrencyCard = () => (
         <div className={`p-4 sm:p-6 rounded-lg shadow-lg border mb-6 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
             <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-700'}`}>Display and Filtering Options</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                
+
                 {/* 1. Currency Selector */}
                 <div className="col-span-1">
                     <label htmlFor="currency-select" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Display Currency</label>
@@ -1200,9 +1202,9 @@ const App = () => {
                 {/* 2. Filter Month */}
                 <div className="col-span-1">
                     <label htmlFor="filter-month" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Filter Month</label>
-                    <select 
-                        id="filter-month" 
-                        value={filterMonth} 
+                    <select
+                        id="filter-month"
+                        value={filterMonth}
                         onChange={(e) => setFilterMonth(e.target.value)}
                         className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2.5 focus:border-indigo-500 focus:ring-indigo-500 ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-black'}`}
                     >
@@ -1218,9 +1220,9 @@ const App = () => {
                 {/* 3. Filter Year */}
                 <div className="flex-1">
                     <label htmlFor="filter-year" className={`block text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Filter Year</label>
-                    <select 
-                        id="filter-year" 
-                        value={filterYear} 
+                    <select
+                        id="filter-year"
+                        value={filterYear}
                         onChange={(e) => setFilterYear(e.target.value)}
                         className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2.5 focus:border-indigo-500 focus:ring-indigo-500 ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-600' : 'bg-white text-black'}`}
                     >
@@ -1306,7 +1308,7 @@ const App = () => {
         useEffect(() => {
             setModalCategory(currentCategories[0] || '');
         }, [modalType, currentCategories]);
-        
+
         useEffect(() => {
             if (showTransactionModal) {
                 setModalDateTime(getModalDefaultDate(filterMonth, filterYear));
@@ -1318,7 +1320,7 @@ const App = () => {
 
         const handleModalSubmit = async (e) => {
             e.preventDefault();
-            
+
             if (!db || !userId || !modalAmount || !modalCategory || !modalDateTime) {
                 console.error("Please fill in all required fields.");
                 return;
@@ -1336,9 +1338,9 @@ const App = () => {
             const newTransaction = {
                 amount: amountUSD, // Amount is stored in USD
                 type: modalType,
-                category: modalCategory, 
+                category: modalCategory,
                 description: modalDescription.trim(),
-                timestamp: timestamp 
+                timestamp: timestamp
             };
 
             try {
@@ -1351,7 +1353,7 @@ const App = () => {
         };
 
         if (!showTransactionModal) return null;
-        
+
         const currentSymbol = CURRENCIES[displayCurrencyCode]?.symbol || '$';
         const modalBg = theme === 'dark' ? 'bg-gray-800' : 'bg-white';
         const textLabel = theme === 'dark' ? 'text-gray-300' : 'text-gray-700';
@@ -1375,30 +1377,28 @@ const App = () => {
                         <button
                             type="button"
                             onClick={() => setModalType('Income')}
-                            className={`flex-1 py-2 text-center text-base font-semibold rounded-lg transition-colors duration-150 ${
-                                modalType === 'Income' ? 'bg-green-500 text-white shadow-md' : `${tabText} ${theme === 'dark' ? 'hover:bg-green-900' : 'hover:bg-green-50'}`
-                            }`}
+                            className={`flex-1 py-2 text-center text-base font-semibold rounded-lg transition-colors duration-150 ${modalType === 'Income' ? 'bg-green-500 text-white shadow-md' : `${tabText} ${theme === 'dark' ? 'hover:bg-green-900' : 'hover:bg-green-50'}`
+                                }`}
                         >
                             Income
                         </button>
                         <button
                             type="button"
                             onClick={() => setModalType('Expense')}
-                            className={`flex-1 py-2 text-center text-base font-semibold rounded-lg transition-colors duration-150 ${
-                                modalType === 'Expense' ? 'bg-red-500 text-white shadow-md' : `${tabText} ${theme === 'dark' ? 'hover:bg-red-900' : 'hover:bg-red-50'}`
-                            }`}
+                            className={`flex-1 py-2 text-center text-base font-semibold rounded-lg transition-colors duration-150 ${modalType === 'Expense' ? 'bg-red-500 text-white shadow-md' : `${tabText} ${theme === 'dark' ? 'hover:bg-red-900' : 'hover:bg-red-50'}`
+                                }`}
                         >
                             Expense
                         </button>
                     </div>
 
                     <form onSubmit={handleModalSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        
+
                         {/* Amount */}
                         <div className="md:col-span-1">
                             {/* Updated Label to show DISPLAYED currency */}
                             <label htmlFor="modal-amount" className={`block text-sm font-medium ${textLabel}`}>Amount (in {displayCurrencyCode})</label>
-                            <input 
+                            <input
                                 type="number" step="0.01" id="modal-amount" required min="0.01"
                                 placeholder={`Amount (${currentSymbol})`}
                                 value={modalAmount} onChange={(e) => setModalAmount(e.target.value)}
@@ -1410,7 +1410,7 @@ const App = () => {
                         {/* Date & Time */}
                         <div className="md:col-span-1">
                             <label htmlFor="modal-datetime" className={`block text-sm font-medium ${textLabel}`}>Date & Time</label>
-                            <input 
+                            <input
                                 type="datetime-local" id="modal-datetime" required
                                 value={modalDateTime} onChange={(e) => setModalDateTime(e.target.value)}
                                 className={`mt-1 block w-full rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 ${inputBg}`}
@@ -1423,9 +1423,9 @@ const App = () => {
                             <select
                                 id="modal-category"
                                 required
-                                value={modalCategory} 
+                                value={modalCategory}
                                 onChange={(e) => setModalCategory(e.target.value)}
-                                className={`mt-1 block w-full rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 ${inputBg}`} 
+                                className={`mt-1 block w-full rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 ${inputBg}`}
                             >
                                 {currentCategories.map(category => (
                                     <option key={category} value={category}>{category}</option>
@@ -1436,24 +1436,23 @@ const App = () => {
                         {/* Description */}
                         <div className="md:col-span-2">
                             <label htmlFor="modal-description" className={`block text-sm font-medium ${textLabel}`}>Description (Optional)</label>
-                            <input 
-                                type="text" id="modal-description" 
+                            <input
+                                type="text" id="modal-description"
                                 value={modalDescription} onChange={(e) => setModalDescription(e.target.value)}
-                                className={`mt-1 block w-full rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 ${inputBg}`} 
+                                className={`mt-1 block w-full rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500 ${inputBg}`}
                                 placeholder="Details of the transaction"
                             />
                         </div>
 
                         {/* Submit Button */}
                         <div className="md:col-span-2 pt-4">
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 disabled={!userId || !modalAmount || !modalDateTime}
-                                className={`w-full font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 ${
-                                    modalType === 'Income' 
-                                        ? 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-500' 
+                                className={`w-full font-semibold py-3 px-4 rounded-lg shadow-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 ${modalType === 'Income'
+                                        ? 'bg-green-500 hover:bg-green-600 text-white focus:ring-green-500'
                                         : 'bg-red-500 hover:bg-red-600 text-white focus:ring-red-500'
-                                }`}
+                                    }`}
                             >
                                 Record {modalType}
                             </button>
@@ -1465,7 +1464,7 @@ const App = () => {
     };
 
     // Consolidated Modal for all Configuration and Navigation
-    const ConfigModal = ({ 
+    const ConfigModal = ({
         categories, recurringTemplates, onClose,
         theme, setTheme, db, userId, appId,
         formatCurrency, displayCurrencyCode, exchangeRates,
@@ -1504,17 +1503,17 @@ const App = () => {
                 <div className={`${modalBg} rounded-xl shadow-2xl w-full max-w-2xl p-6`} onClick={(e) => e.stopPropagation()}>
                     <div className={`flex justify-between items-center mb-6 border-b ${border} pb-3`}>
                         <h3 className={`text-2xl font-bold ${textHeading}`}>
-                            {isMainView ? 'Configuration Menu' : 
-                             view === 'Categories' ? 'Category Management' :
-                             view === 'Recurring' ? 'Recurring Transactions' :
-                             view === 'Theme' ? 'Theme & Preferences' :
-                             view === 'Reset' ? 'Reset Data' : 'Settings'}
+                            {isMainView ? 'Configuration Menu' :
+                                view === 'Categories' ? 'Category Management' :
+                                    view === 'Recurring' ? 'Recurring Transactions' :
+                                        view === 'Theme' ? 'Theme & Preferences' :
+                                            view === 'Reset' ? 'Reset Data' : 'Settings'}
                         </h3>
                         <button onClick={onClose} className={`${subText} ${btnHover} p-1 rounded-full`}>
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
-                    
+
                     {!isMainView && (
                         <div className="mb-4">
                             <button onClick={() => setView('Dashboard')} className="flex items-center text-sm font-semibold text-indigo-500 hover:text-indigo-400">
@@ -1525,13 +1524,13 @@ const App = () => {
                     )}
 
                     <div className="max-h-[75vh] overflow-y-auto pr-2">
-                        {isMainView && <NavigationView 
-                            theme={theme} 
-                            textHeading={textHeading} 
-                            handleNavAction={handleNavAction} 
-                            setView={setView} 
+                        {isMainView && <NavigationView
+                            theme={theme}
+                            textHeading={textHeading}
+                            handleNavAction={handleNavAction}
+                            setView={setView}
                         />}
-                        {view === 'Categories' && <CategoryView 
+                        {view === 'Categories' && <CategoryView
                             theme={theme} textHeading={textHeading} cardBg={cardBg} border={border} inputBg={inputBg} itemBg={itemBg} subText={subText}
                             db={db} userId={userId} appId={appId} categories={userCategories}
                         />}
@@ -1540,11 +1539,11 @@ const App = () => {
                             db={db} userId={userId} appId={appId} categories={categories} recurringTemplates={recurringTemplates}
                             formatCurrency={formatCurrency} displayCurrencyCode={displayCurrencyCode} exchangeRates={exchangeRates}
                         />}
-                        {view === 'Theme' && <ThemeView 
+                        {view === 'Theme' && <ThemeView
                             theme={theme} textHeading={textHeading} cardBg={cardBg} border={border} btnHover={btnHover} subText={subText}
                             setTheme={setTheme}
                         />}
-                        {view === 'Reset' && <ResetView 
+                        {view === 'Reset' && <ResetView
                             theme={theme} textHeading={textHeading} cardBg={cardBg} subText={subText}
                             setShowConfirmResetModal={setShowConfirmResetModal}
                         />}
@@ -1557,12 +1556,12 @@ const App = () => {
     // Confirmation Modal for Reset
     const ConfirmResetModal = () => {
         if (!showConfirmResetModal) return null;
-        
+
         const modalBg = theme === 'dark' ? 'bg-gray-800' : 'bg-white';
         const textHeading = theme === 'dark' ? 'text-white' : 'text-gray-800';
         const subText = theme === 'dark' ? 'text-gray-400' : 'text-gray-600';
         const btnCancel = theme === 'dark' ? 'bg-gray-600 text-gray-200 hover:bg-gray-500' : 'bg-gray-100 text-gray-600 hover:bg-gray-200';
-        
+
         return (
             <div className="fixed inset-0 bg-black bg-opacity-70 z-[60] flex justify-center items-center p-4" onClick={() => setShowConfirmResetModal(false)}>
                 <div className={`${modalBg} rounded-xl shadow-2xl w-full max-w-md p-6`} onClick={(e) => e.stopPropagation()}>
@@ -1599,7 +1598,7 @@ const App = () => {
         // Summaries are in USD
         const dataA = useMemo(() => calculateSummary(transactions, reportMonthA, reportYearA), [transactions, reportMonthA, reportYearA, calculateSummary]);
         const dataB = useMemo(() => calculateSummary(transactions, reportMonthB, reportYearB), [transactions, reportMonthB, reportYearB, calculateSummary]);
-        
+
         const cardBg = theme === 'dark' ? 'bg-gray-800' : 'bg-white';
         const headingColor = theme === 'dark' ? 'text-white' : 'text-gray-800';
         const textColor = theme === 'dark' ? 'text-gray-300' : 'text-gray-700';
@@ -1617,23 +1616,23 @@ const App = () => {
         const ComparisonRow = ({ title, valueA_USD, valueB_USD, color }) => {
             const diff = valueA_USD - valueB_USD;
             const percentageChange = valueB_USD !== 0 ? ((diff / Math.abs(valueB_USD)) * 100).toFixed(1) : (valueA_USD !== 0 ? 'N/A' : '0.0');
-            
-            let diffColor = diff > 0 ? 'text-red-600' : (diff < 0 ? 'text-green-600' : (theme === 'dark' ? 'text-gray-400' : 'text-gray-500')); 
+
+            let diffColor = diff > 0 ? 'text-red-600' : (diff < 0 ? 'text-green-600' : (theme === 'dark' ? 'text-gray-400' : 'text-gray-500'));
             let symbol = diff > 0 ? <TrendDownIcon /> : (diff < 0 ? <TrendUpIcon /> : <span className="w-5 h-5 text-center">-</span>);
 
             if (title.includes('Income') || title.includes('Balance')) {
-                diffColor = diff > 0 ? 'text-green-600' : (diff < 0 ? 'text-red-600' : (theme === 'dark' ? 'text-gray-400' : 'text-gray-500')); 
+                diffColor = diff > 0 ? 'text-green-600' : (diff < 0 ? 'text-red-600' : (theme === 'dark' ? 'text-gray-400' : 'text-gray-500'));
                 symbol = diff > 0 ? <TrendUpIcon /> : (diff < 0 ? <TrendDownIcon /> : <span className="w-5 h-5 text-center">-</span>);
             }
 
 
-            const changeText = percentageChange === 'N/A' 
-                ? 'New Data' 
+            const changeText = percentageChange === 'N/A'
+                ? 'New Data'
                 : <span className="flex items-center justify-end">
                     <span className="mr-1.5">{symbol}</span>
                     {/* CONVERTED diff */}
                     {formatCurrency(Math.abs(diff), displayCurrencyCode, exchangeRates)} ({Math.abs(percentageChange)}%)
-                  </span>;
+                </span>;
 
             return (
                 <div className={`flex justify-between items-center py-3 border-b ${border}`}>
@@ -1652,7 +1651,7 @@ const App = () => {
             <div className={`w-full p-6 rounded-xl shadow-lg mt-8 ${cardBg}`}>
                 <div className={`flex justify-between items-center mb-6 border-b ${border} pb-4`}>
                     <h2 className={`text-2xl font-bold ${headingColor}`}>Comparative Report</h2>
-                    <button 
+                    <button
                         onClick={() => setCurrentView('Dashboard')}
                         className={`text-sm font-semibold text-indigo-600 hover:text-indigo-800 p-2 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-indigo-50'}`}
                     >
@@ -1706,22 +1705,22 @@ const App = () => {
 
                 {/* Comparison Data Rows */}
                 <div className={`rounded-b-lg p-2 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-                    <ComparisonRow 
-                        title="Total Income" 
-                        valueA_USD={dataA.summary.income} 
-                        valueB_USD={dataB.summary.income} 
+                    <ComparisonRow
+                        title="Total Income"
+                        valueA_USD={dataA.summary.income}
+                        valueB_USD={dataB.summary.income}
                         color="text-green-600"
                     />
-                    <ComparisonRow 
-                        title="Total Expenses" 
-                        valueA_USD={dataA.summary.expense} 
-                        valueB_USD={dataB.summary.expense} 
+                    <ComparisonRow
+                        title="Total Expenses"
+                        valueA_USD={dataA.summary.expense}
+                        valueB_USD={dataB.summary.expense}
                         color="text-red-600"
                     />
-                    <ComparisonRow 
-                        title="Net Balance" 
-                        valueA_USD={dataA.summary.balance} 
-                        valueB_USD={dataB.summary.balance} 
+                    <ComparisonRow
+                        title="Net Balance"
+                        valueA_USD={dataA.summary.balance}
+                        valueB_USD={dataB.summary.balance}
                         color={theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}
                     />
                 </div>
@@ -1732,14 +1731,14 @@ const App = () => {
     const DashboardView = () => (
         <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <SummaryCard 
-                    title="Current Balance" 
+                <SummaryCard
+                    title="Current Balance"
                     baseValue={dashboardData.summary.balance} // Pass base USD value
                     bgColor={dashboardData.summary.balance >= 0 ? (theme === 'dark' ? 'bg-indigo-700' : 'bg-indigo-600') : (theme === 'dark' ? 'bg-red-800' : 'bg-red-700')}
                 />
                 <SummaryCard title="Total Income" baseValue={dashboardData.summary.income} bgColor={theme === 'dark' ? 'bg-green-700' : 'bg-green-500'} />
-                <SummaryCard title="Total Expenses" baseValue={dashboardData.summary.expense} bgColor={theme ==='dark' ? 'bg-red-700' : 'bg-red-500'} />
-                
+                <SummaryCard title="Total Expenses" baseValue={dashboardData.summary.expense} bgColor={theme === 'dark' ? 'bg-red-700' : 'bg-red-500'} />
+
                 <div className="md:col-span-3">
                     <GoalCard summary={dashboardData.summary} />
                 </div>
@@ -1757,70 +1756,87 @@ const App = () => {
             </div>
 
             <FilterAndCurrencyCard />
-            
+
             <ExpenseChart expenseCategoryData={dashboardData.expenseCategoryData} />
 
             <TransactionList filteredTransactions={dashboardData.filteredTransactions} />
         </>
     );
 
-    return (
-        <div className={`min-h-screen p-4 sm:p-8 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'}`}>
-            {/* Modals */}
-            {showGoalModal && <GoalModal 
-                goalUSD={monthlyGoalUSD} 
-                onSave={handleSaveGoal} 
-                onClose={() => setShowGoalModal(false)} 
-            />}
-            <AddTransactionModal />
-            <ConfigModal 
-                categories={userCategories} 
-                recurringTemplates={recurringTemplates} 
-                onClose={() => setShowConfigModal(false)}
-                // Pass all state and helpers needed by sub-components
-                theme={theme}
-                setTheme={setTheme}
-                db={db}
-                userId={userId}
-                appId={appId}
-                formatCurrency={formatCurrency}
-                displayCurrencyCode={displayCurrencyCode}
-                exchangeRates={exchangeRates}
-                setShowConfirmResetModal={setShowConfirmResetModal}
-                setCurrentView={setCurrentView}
-                setShowGoalModal={setShowGoalModal}
-            />
-            <ConfirmResetModal />
+    // 1. Show a global loader while we check auth
+if (isLoading) {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+      <svg className="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+  );
+}
 
-            {/* Main Container */}
-            <div className={`max-w-4xl mx-auto shadow-2xl rounded-xl p-6 sm:p-8 ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
+// 2. Decide which page to show
+// We check if the user is a "guest" or not.
+if (isAnonymous) {
+  // If user is a guest (or logged out), show the AuthPage
+  // We pass 'auth' so AuthPage can use it to sign in/sign up
+  // We also pass a function to update our state when they log in
+  return <AuthPage auth={auth} onLoginSuccess={() => setIsAnonymous(false)} />
+}
 
-                <div className="flex justify-between items-start mb-6">
-                    <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Budget Flow</h1>
-                    
-                    <button
-                        onClick={() => setShowConfigModal(true)}
-                        className={`p-2 rounded-full ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-700 hover:text-gray-200' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'} transition`}
-                        disabled={!userId}
-                        title="Open Settings and Configuration"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.82 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.82 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.82-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.82-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    </button>
-                </div>
+// 3. If they are not a guest, show the dashboard!
+return (
+  <div className={`min-h-screen p-4 sm:p-8 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'}`}>
+    {/* Modals */}
+    {showGoalModal && <GoalModal 
+      goalUSD={monthlyGoalUSD} 
+      onSave={handleSaveGoal} 
+      onClose={() => setShowGoalModal(false)} 
+    />}
+    <AddTransactionModal />
+    <ConfigModal 
+      categories={userCategories} 
+      recurringTemplates={recurringTemplates} 
+      onClose={() => setShowConfigModal(false)}
+      theme={theme}
+      setTheme={setTheme}
+      db={db}
+      userId={userId}
+      appId={appId}
+      formatCurrency={formatCurrency}
+      displayCurrencyCode={displayCurrencyCode}
+      exchangeRates={exchangeRates}
+      setShowConfirmResetModal={setShowConfirmResetModal}
+      setCurrentView={setCurrentView}
+      setShowGoalModal={setShowGoalModal}
+    />
+    <ConfirmResetModal />
 
-                {isLoading ? (
-                    <LoadingSpinner />
-                ) : (
-                    currentView === 'Dashboard' ? <DashboardView /> : <ReportView />
-                )}
-            </div>
+    {/* Main Container */}
+    <div className={`max-w-4xl mx-auto shadow-2xl rounded-xl p-6 sm:p-8 ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
 
-            {/* Footer with User ID */}
-            <footer className="max-w-4xl mx-auto mt-4 p-4 text-center text-xs text-gray-500">
-                <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} font-medium`}>Budget Flow</span> | Authenticated User ID: <span id="user-id-display" className="font-mono text-indigo-500 break-all">{userId || 'N/A'}</span>
-            </footer>
-        </div>
-    );
+      <div className="flex justify-between items-start mb-6">
+        <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Budget Flow</h1>
+
+        <button
+          onClick={() => setShowConfigModal(true)}
+          className={`p-2 rounded-full ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-700 hover:text-gray-200' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'} transition`}
+          disabled={!userId}
+          title="Open Settings and Configuration"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.82 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.82 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.82-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.82-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </button>
+      </div>
+
+      { currentView === 'Dashboard' ? <DashboardView /> : <ReportView /> }
+    </div>
+
+    {/* Footer with User ID */}
+    <footer className="max-w-4xl mx-auto mt-4 p-4 text-center text-xs text-gray-500">
+      <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} font-medium`}>Budget Flow</span> | Authenticated User ID: <span id="user-id-display" className="font-mono text-indigo-500 break-all">{userId || 'N/A'}</span>
+    </footer>
+  </div>
+);
 }
 
 export default App;
